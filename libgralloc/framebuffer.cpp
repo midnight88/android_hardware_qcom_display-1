@@ -112,9 +112,9 @@ static int fb_post(struct framebuffer_device_t* dev, buffer_handle_t buffer)
         m->info.activate = FB_ACTIVATE_VBL | FB_ACTIVATE_FORCE;
         m->info.yoffset = hnd->offset / m->finfo.line_length;
         m->commit.var = m->info;
-        if (ioctl(m->framebuffer->fd, MSMFB_DISPLAY_COMMIT, &m->commit) == -1) {
-            ALOGE("%s: MSMFB_DISPLAY_COMMIT ioctl failed, err: %s", __FUNCTION__,
-                    strerror(errno));
+	if (ioctl(m->framebuffer->fd, FBIOPUT_VSCREENINFO, &m->info) == -1) {
+            ALOGE("FBIOPUT_VSCREENINFO failed");
+            genlock_unlock_buffer(hnd);
             return -errno;
         }
     }
