@@ -73,6 +73,7 @@ static void *vsync_loop(void *param)
 
     do {
         pthread_mutex_lock(&ctx->vstate.lock);
+#ifndef NO_HW_VSYNC
         while (ctx->vstate.enable == false) {
             if(enabled) {
                 int e = 0;
@@ -130,7 +131,10 @@ static void *vsync_loop(void *param)
        ALOGD_IF (VSYNC_DEBUG, "%s: timestamp %llu sent to HWC for %s",
             __FUNCTION__, cur_timestamp, "fb0");
        ctx->proc->vsync(ctx->proc, dpy, cur_timestamp);
-
+#else
+	usleep(16000);
+    	ctx->proc->vsync(ctx->proc, 0, systemTime());
+#endif
     } while (true);
     if(fd_timestamp >= 0)
         close (fd_timestamp);
